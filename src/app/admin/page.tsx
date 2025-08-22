@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import ProtectedRoute from '@/components/ProtectedRoute'
-import { getModules, deleteModule } from '@/lib/modules'
-import { Module } from '@/types'
+import { getModules, deleteModule, getModuleWithSubModules } from '@/lib/modules'
+import { Module, ModuleWithSubModules } from '@/types'
 
 export default function AdminDashboard() {
   const [modules, setModules] = useState<Module[]>([])
@@ -153,6 +153,12 @@ export default function AdminDashboard() {
                             className="text-blue-600 hover:text-blue-900 transition-colors"
                           >
                             View
+                          </Link>
+                          <Link
+                            href={`/admin/modules/${module.id}/sub-modules`}
+                            className="text-green-600 hover:text-green-900 transition-colors"
+                          >
+                            Lessons
                           </Link>
                           <Link
                             href={`/admin/modules/${module.id}/edit`}

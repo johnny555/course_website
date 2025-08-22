@@ -1,5 +1,5 @@
 import { createClient } from './supabase-client'
-import { Module } from '@/types'
+import { Module, SubModule, ModuleWithSubModules } from '@/types'
 
 export async function getModules(): Promise<Module[]> {
   const supabase = createClient()
@@ -14,9 +14,7 @@ export async function getModules(): Promise<Module[]> {
       {
         id: 'demo-1',
         title: 'Introduction to Robotics',
-        description: '# Welcome to Robotics!\n\nThis is a **demo module** to showcase the platform.\n\n```python\n# Sample robotics code\nimport robot\n\ndef move_forward():\n    robot.forward(speed=50)\n```\n\nTo see real content, set up your Supabase credentials!',
-        youtube_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        screenshot_urls: [],
+        description: 'Learn the fundamentals of robotics, from basic concepts to practical applications.',
         thumbnail_url: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
         order: 1,
         created_at: new Date().toISOString(),
@@ -25,9 +23,7 @@ export async function getModules(): Promise<Module[]> {
       {
         id: 'demo-2',
         title: 'Building Your First Robot',
-        description: '# Building Your First Robot\n\nLearn the basics of robot construction.\n\n## What You\'ll Need:\n- Arduino board\n- Sensors\n- Motors\n- Patience!\n\nThis is **demo content** - configure Supabase to add real modules.',
-        youtube_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        screenshot_urls: [],
+        description: 'Hands-on guide to constructing your first robot from scratch.',
         thumbnail_url: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
         order: 2,
         created_at: new Date().toISOString(),
@@ -76,6 +72,128 @@ export async function getModule(id: string): Promise<Module | null> {
   return data
 }
 
+export async function getModuleWithSubModules(id: string): Promise<ModuleWithSubModules | null> {
+  const supabase = createClient()
+  
+  // Check if we're using placeholder credentials
+  const isPlaceholder = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('placeholder') || 
+                       process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co'
+  
+  if (isPlaceholder) {
+    // Return demo data for placeholder mode
+    const demoSubModules = [
+      {
+        id: 'demo-sub-1',
+        module_id: 'demo-1',
+        title: 'What is a Robot?',
+        description: '# What is a Robot?\n\nRobots are programmable machines that can perform tasks autonomously.\n\n```python\n# Basic robot control\nrobot.move_forward(100)\nrobot.turn_left(90)\n```',
+        youtube_urls: ['https://www.youtube.com/watch?v=dQw4w9WgXcQ'],
+        screenshot_urls: [],
+        order: 1,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: 'demo-sub-2',
+        module_id: 'demo-1',
+        title: 'Types of Robots',
+        description: '# Types of Robots\n\nThere are many different types of robots:\n\n- Industrial robots\n- Service robots\n- Humanoid robots\n- Mobile robots',
+        youtube_urls: ['https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'],
+        screenshot_urls: [],
+        order: 2,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
+    ]
+    
+    const module = await getModule(id)
+    if (!module) return null
+    
+    return {
+      ...module,
+      sub_modules: demoSubModules.filter(sub => sub.module_id === id)
+    }
+  }
+  
+  const { data: moduleData, error: moduleError } = await supabase
+    .from('modules')
+    .select('*')
+    .eq('id', id)
+    .single()
+  
+  if (moduleError) {
+    console.error('Error fetching module:', moduleError)
+    return null
+  }
+  
+  const { data: subModulesData, error: subModulesError } = await supabase
+    .from('sub_modules')
+    .select('*')
+    .eq('module_id', id)
+    .order('order', { ascending: true })
+  
+  if (subModulesError) {
+    console.error('Error fetching sub-modules:', subModulesError)
+    return null
+  }
+  
+  return {
+    ...moduleData,
+    sub_modules: subModulesData || []
+  }
+}
+
+export async function getSubModule(id: string): Promise<SubModule | null> {
+  const supabase = createClient()
+  
+  // Check if we're using placeholder credentials
+  const isPlaceholder = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('placeholder') || 
+                       process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co'
+  
+  if (isPlaceholder) {
+    // Return demo data
+    const demoSubModules = [
+      {
+        id: 'demo-sub-1',
+        module_id: 'demo-1',
+        title: 'What is a Robot?',
+        description: '# What is a Robot?\n\nRobots are programmable machines that can perform tasks autonomously.\n\n```python\n# Basic robot control\nrobot.move_forward(100)\nrobot.turn_left(90)\n```\n\nThis is **demo content** - set up Supabase to add real content!',
+        youtube_urls: ['https://www.youtube.com/watch?v=dQw4w9WgXcQ'],
+        screenshot_urls: [],
+        order: 1,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: 'demo-sub-2',
+        module_id: 'demo-1',
+        title: 'Types of Robots',
+        description: '# Types of Robots\n\nThere are many different types of robots:\n\n- **Industrial robots**: Used in manufacturing\n- **Service robots**: Help with daily tasks\n- **Humanoid robots**: Look and act like humans\n- **Mobile robots**: Can move around autonomously\n\n```arduino\n// Arduino robot code\nvoid setup() {\n  Serial.begin(9600);\n}\n\nvoid loop() {\n  moveForward();\n  delay(1000);\n}\n```',
+        youtube_urls: ['https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'],
+        screenshot_urls: [],
+        order: 2,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
+    ]
+    
+    return demoSubModules.find(sub => sub.id === id) || null
+  }
+  
+  const { data, error } = await supabase
+    .from('sub_modules')
+    .select('*')
+    .eq('id', id)
+    .single()
+  
+  if (error) {
+    console.error('Error fetching sub-module:', error)
+    return null
+  }
+  
+  return data
+}
+
 export async function createModule(module: Omit<Module, 'id' | 'created_at' | 'updated_at'>): Promise<Module | null> {
   const supabase = createClient()
   
@@ -87,6 +205,23 @@ export async function createModule(module: Omit<Module, 'id' | 'created_at' | 'u
   
   if (error) {
     console.error('Error creating module:', error)
+    return null
+  }
+  
+  return data
+}
+
+export async function createSubModule(subModule: Omit<SubModule, 'id' | 'created_at' | 'updated_at'>): Promise<SubModule | null> {
+  const supabase = createClient()
+  
+  const { data, error } = await supabase
+    .from('sub_modules')
+    .insert(subModule)
+    .select()
+    .single()
+  
+  if (error) {
+    console.error('Error creating sub-module:', error)
     return null
   }
   
@@ -111,6 +246,24 @@ export async function updateModule(id: string, updates: Partial<Omit<Module, 'id
   return data
 }
 
+export async function updateSubModule(id: string, updates: Partial<Omit<SubModule, 'id' | 'created_at' | 'updated_at'>>): Promise<SubModule | null> {
+  const supabase = createClient()
+  
+  const { data, error } = await supabase
+    .from('sub_modules')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single()
+  
+  if (error) {
+    console.error('Error updating sub-module:', error)
+    return null
+  }
+  
+  return data
+}
+
 export async function deleteModule(id: string): Promise<boolean> {
   const supabase = createClient()
   
@@ -121,6 +274,22 @@ export async function deleteModule(id: string): Promise<boolean> {
   
   if (error) {
     console.error('Error deleting module:', error)
+    return false
+  }
+  
+  return true
+}
+
+export async function deleteSubModule(id: string): Promise<boolean> {
+  const supabase = createClient()
+  
+  const { error } = await supabase
+    .from('sub_modules')
+    .delete()
+    .eq('id', id)
+  
+  if (error) {
+    console.error('Error deleting sub-module:', error)
     return false
   }
   

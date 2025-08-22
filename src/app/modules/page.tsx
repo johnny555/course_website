@@ -93,6 +93,12 @@ export default function ModulesPage() {
                     </p>
                     <div className="mt-4 flex items-center text-sm text-gray-500">
                       <span>Module {module.order}</span>
+                      {module.sub_modules && (
+                        <>
+                          <span className="mx-2">•</span>
+                          <span>{module.sub_modules.length} lesson{module.sub_modules.length !== 1 ? 's' : ''}</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </Link>
