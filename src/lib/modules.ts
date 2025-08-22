@@ -4,6 +4,38 @@ import { Module } from '@/types'
 export async function getModules(): Promise<Module[]> {
   const supabase = createClient()
   
+  // Check if we're using placeholder credentials
+  const isPlaceholder = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('placeholder') || 
+                       process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co'
+  
+  if (isPlaceholder) {
+    // Return demo data for placeholder mode
+    return [
+      {
+        id: 'demo-1',
+        title: 'Introduction to Robotics',
+        description: '# Welcome to Robotics!\n\nThis is a **demo module** to showcase the platform.\n\n```python\n# Sample robotics code\nimport robot\n\ndef move_forward():\n    robot.forward(speed=50)\n```\n\nTo see real content, set up your Supabase credentials!',
+        youtube_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        screenshot_urls: [],
+        thumbnail_url: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+        order: 1,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: 'demo-2',
+        title: 'Building Your First Robot',
+        description: '# Building Your First Robot\n\nLearn the basics of robot construction.\n\n## What You\'ll Need:\n- Arduino board\n- Sensors\n- Motors\n- Patience!\n\nThis is **demo content** - configure Supabase to add real modules.',
+        youtube_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        screenshot_urls: [],
+        thumbnail_url: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+        order: 2,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
+    ]
+  }
+  
   const { data, error } = await supabase
     .from('modules')
     .select('*')
@@ -19,6 +51,16 @@ export async function getModules(): Promise<Module[]> {
 
 export async function getModule(id: string): Promise<Module | null> {
   const supabase = createClient()
+  
+  // Check if we're using placeholder credentials
+  const isPlaceholder = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('placeholder') || 
+                       process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co'
+  
+  if (isPlaceholder) {
+    // Return demo data for placeholder mode
+    const demoModules = await getModules()
+    return demoModules.find(module => module.id === id) || null
+  }
   
   const { data, error } = await supabase
     .from('modules')

@@ -4,6 +4,19 @@ import { User, Profile } from '@/types'
 export async function signUp(email: string, password: string) {
   const supabase = createClient()
   
+  // Check if we're using placeholder credentials
+  const isPlaceholder = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('placeholder') || 
+                       process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co'
+  
+  if (isPlaceholder) {
+    return {
+      data: null,
+      error: {
+        message: 'Demo mode: Please set up Supabase credentials to enable registration. See DEPLOYMENT.md for instructions.'
+      }
+    }
+  }
+  
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -14,6 +27,19 @@ export async function signUp(email: string, password: string) {
 
 export async function signIn(email: string, password: string) {
   const supabase = createClient()
+  
+  // Check if we're using placeholder credentials
+  const isPlaceholder = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('placeholder') || 
+                       process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co'
+  
+  if (isPlaceholder) {
+    return {
+      data: null,
+      error: {
+        message: 'Demo mode: Please set up Supabase credentials to enable authentication. See DEPLOYMENT.md for instructions.'
+      }
+    }
+  }
   
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
