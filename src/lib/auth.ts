@@ -10,7 +10,7 @@ export async function signUp(email: string, password: string) {
   
   if (isPlaceholder) {
     return {
-      data: null,
+      data: { user: null, session: null },
       error: {
         message: 'Demo mode: Please set up Supabase credentials to enable registration. See DEPLOYMENT.md for instructions.'
       }
@@ -34,7 +34,7 @@ export async function signIn(email: string, password: string) {
   
   if (isPlaceholder) {
     return {
-      data: null,
+      data: { user: null, session: null },
       error: {
         message: 'Demo mode: Please set up Supabase credentials to enable authentication. See DEPLOYMENT.md for instructions.'
       }

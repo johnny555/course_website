@@ -34,7 +34,7 @@ export default function LoginPage() {
     if (error) {
       setError(error.message)
       setLoading(false)
-    } else if (data.user) {
+    } else if (data?.user) {
       // Redirect will be handled by auth state change
       setLoading(false)
     }
