@@ -106,11 +106,11 @@ export async function getModuleWithSubModules(id: string): Promise<ModuleWithSub
       }
     ]
     
-    const module = await getModule(id)
-    if (!module) return null
+    const moduleData = await getModule(id)
+    if (!moduleData) return null
     
     return {
-      ...module,
+      ...moduleData,
       sub_modules: demoSubModules.filter(sub => sub.module_id === id)
     }
   }

@@ -118,7 +118,7 @@ export default function ModuleOverviewPage() {
               <div className="text-center py-12 bg-white rounded-lg shadow-sm">
                 <div className="text-6xl mb-4">📚</div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No lessons yet</h3>
-                <p className="text-gray-600">This module doesn't have any lessons yet.</p>
+                <p className="text-gray-600">This module doesn&apos;t have any lessons yet.</p>
               </div>
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

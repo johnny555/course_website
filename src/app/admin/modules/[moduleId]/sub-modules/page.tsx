@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -15,11 +15,7 @@ export default function SubModulesAdminPage() {
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchModule()
-  }, [params.moduleId])
-
-  const fetchModule = async () => {
+  const fetchModule = useCallback(async () => {
     if (!params.moduleId || typeof params.moduleId !== 'string') {
       router.push('/admin')
       return
@@ -38,7 +34,11 @@ export default function SubModulesAdminPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [params.moduleId, router])
+
+  useEffect(() => {
+    fetchModule()
+  }, [fetchModule])
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this lesson?')) {
