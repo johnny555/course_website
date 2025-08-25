@@ -12,7 +12,6 @@ import 'highlight.js/styles/github.css'
 interface ModuleFormData {
   title: string
   description: string
-  order: number
   thumbnail_url?: string
 }
 
@@ -36,7 +35,6 @@ export default function ModuleForm({ module, isEdit = false }: ModuleFormProps) 
     defaultValues: {
       title: module?.title || '',
       description: module?.description || '',
-      order: module?.order || 1,
       thumbnail_url: module?.thumbnail_url || '',
     },
   })
@@ -52,6 +50,8 @@ export default function ModuleForm({ module, isEdit = false }: ModuleFormProps) 
       const moduleData = {
         ...data,
         thumbnail_url: data.thumbnail_url || null,
+        // Keep existing order for edits, auto-assign for new modules (will be handled by createModule function)
+        order: isEdit && module ? module.order : 0
       }
 
       let result
@@ -110,24 +110,6 @@ export default function ModuleForm({ module, isEdit = false }: ModuleFormProps) 
                 )}
               </div>
 
-              <div>
-                <label htmlFor="order" className="block text-sm font-medium text-gray-700 mb-1">
-                  Order *
-                </label>
-                <input
-                  {...register('order', { 
-                    required: 'Order is required',
-                    min: { value: 1, message: 'Order must be at least 1' }
-                  })}
-                  type="number"
-                  min="1"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="1"
-                />
-                {errors.order && (
-                  <p className="mt-1 text-sm text-red-600">{errors.order.message}</p>
-                )}
-              </div>
 
 
               <div>

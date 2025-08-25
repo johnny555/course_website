@@ -194,12 +194,35 @@ export async function getSubModule(id: string): Promise<SubModule | null> {
   return data
 }
 
-export async function createModule(module: Omit<Module, 'id' | 'created_at' | 'updated_at'>): Promise<Module | null> {
+export async function getNextModuleOrder(): Promise<number> {
   const supabase = createClient()
   
   const { data, error } = await supabase
     .from('modules')
-    .insert(module)
+    .select('order')
+    .order('order', { ascending: false })
+    .limit(1)
+  
+  if (error) {
+    console.error('Error getting max order:', error)
+    return 1
+  }
+  
+  return data && data.length > 0 ? data[0].order + 1 : 1
+}
+
+export async function createModule(module: Omit<Module, 'id' | 'created_at' | 'updated_at'>): Promise<Module | null> {
+  const supabase = createClient()
+  
+  // Auto-assign order if not provided
+  const moduleData = {
+    ...module,
+    order: module.order || await getNextModuleOrder()
+  }
+  
+  const { data, error } = await supabase
+    .from('modules')
+    .insert(moduleData)
     .select()
     .single()
   
@@ -244,6 +267,28 @@ export async function updateModule(id: string, updates: Partial<Omit<Module, 'id
   }
   
   return data
+}
+
+export async function reorderModules(modules: { id: string; order: number }[]): Promise<boolean> {
+  const supabase = createClient()
+  
+  try {
+    for (const moduleItem of modules) {
+      const { error } = await supabase
+        .from('modules')
+        .update({ order: moduleItem.order })
+        .eq('id', moduleItem.id)
+      
+      if (error) {
+        console.error('Error updating module order:', error)
+        return false
+      }
+    }
+    return true
+  } catch (error) {
+    console.error('Error reordering modules:', error)
+    return false
+  }
 }
 
 export async function updateSubModule(id: string, updates: Partial<Omit<SubModule, 'id' | 'created_at' | 'updated_at'>>): Promise<SubModule | null> {
