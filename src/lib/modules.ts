@@ -234,12 +234,36 @@ export async function createModule(module: Omit<Module, 'id' | 'created_at' | 'u
   return data
 }
 
-export async function createSubModule(subModule: Omit<SubModule, 'id' | 'created_at' | 'updated_at'>): Promise<SubModule | null> {
+export async function getNextSubModuleOrder(moduleId: string): Promise<number> {
   const supabase = createClient()
   
   const { data, error } = await supabase
     .from('sub_modules')
-    .insert(subModule)
+    .select('order')
+    .eq('module_id', moduleId)
+    .order('order', { ascending: false })
+    .limit(1)
+  
+  if (error) {
+    console.error('Error getting max sub-module order:', error)
+    return 1
+  }
+  
+  return data && data.length > 0 ? data[0].order + 1 : 1
+}
+
+export async function createSubModule(subModule: Omit<SubModule, 'id' | 'created_at' | 'updated_at'>): Promise<SubModule | null> {
+  const supabase = createClient()
+  
+  // Auto-assign order if not provided
+  const subModuleData = {
+    ...subModule,
+    order: subModule.order || await getNextSubModuleOrder(subModule.module_id)
+  }
+  
+  const { data, error } = await supabase
+    .from('sub_modules')
+    .insert(subModuleData)
     .select()
     .single()
   
@@ -307,6 +331,28 @@ export async function updateSubModule(id: string, updates: Partial<Omit<SubModul
   }
   
   return data
+}
+
+export async function reorderSubModules(subModules: { id: string; order: number }[]): Promise<boolean> {
+  const supabase = createClient()
+  
+  try {
+    for (const subModuleItem of subModules) {
+      const { error } = await supabase
+        .from('sub_modules')
+        .update({ order: subModuleItem.order })
+        .eq('id', subModuleItem.id)
+      
+      if (error) {
+        console.error('Error updating sub-module order:', error)
+        return false
+      }
+    }
+    return true
+  } catch (error) {
+    console.error('Error reordering sub-modules:', error)
+    return false
+  }
 }
 
 export async function deleteModule(id: string): Promise<boolean> {

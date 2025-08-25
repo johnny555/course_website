@@ -15,7 +15,6 @@ interface SubModuleFormData {
   title: string
   description: string
   youtube_urls: { url: string }[]
-  order: number
 }
 
 interface SubModuleFormProps {
@@ -44,7 +43,6 @@ export default function SubModuleForm({ moduleId, subModule, isEdit = false }: S
       title: subModule?.title || '',
       description: subModule?.description || '',
       youtube_urls: subModule?.youtube_urls?.map(url => ({ url })) || [{ url: '' }],
-      order: subModule?.order || 1,
     },
   })
 
@@ -124,6 +122,8 @@ export default function SubModuleForm({ moduleId, subModule, isEdit = false }: S
         module_id: moduleId,
         youtube_urls: data.youtube_urls.map(item => item.url).filter(url => url.trim() !== ''),
         screenshot_urls: screenshots,
+        // Keep existing order for edits, auto-assign for new sub-modules
+        order: isEdit && subModule ? subModule.order : 0
       }
 
       let result
@@ -182,24 +182,6 @@ export default function SubModuleForm({ moduleId, subModule, isEdit = false }: S
                 )}
               </div>
 
-              <div>
-                <label htmlFor="order" className="block text-sm font-medium text-gray-700 mb-1">
-                  Order *
-                </label>
-                <input
-                  {...register('order', { 
-                    required: 'Order is required',
-                    min: { value: 1, message: 'Order must be at least 1' }
-                  })}
-                  type="number"
-                  min="1"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="1"
-                />
-                {errors.order && (
-                  <p className="mt-1 text-sm text-red-600">{errors.order.message}</p>
-                )}
-              </div>
 
               <div>
                 <div className="flex justify-between items-center mb-2">
