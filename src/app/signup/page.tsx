@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { signUp } from '@/lib/auth'
 import { useAuth } from '@/components/AuthProvider'
+import { isEmailApproved } from '@/lib/approved-users'
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('')
@@ -39,6 +40,14 @@ export default function SignUpPage() {
 
     if (password.length < 6) {
       setError('Password must be at least 6 characters')
+      setLoading(false)
+      return
+    }
+
+    // Check if email is approved
+    const approved = await isEmailApproved(email)
+    if (!approved) {
+      setError('This email is not approved for course access. Only students who have purchased the course can sign up.')
       setLoading(false)
       return
     }
@@ -82,15 +91,22 @@ export default function SignUpPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
+            Join Become A Roboticist
           </h2>
+          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+            <p className="text-sm text-blue-800 font-medium">Course Access Required</p>
+            <p className="mt-1 text-sm text-blue-700">
+              Only students who have purchased the "Become A Roboticist" course can create an account. 
+              Your email must be on the approved list.
+            </p>
+          </div>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
+            Already have an account?{' '}
             <Link
               href="/login"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              sign in to your existing account
+              Sign in here
             </Link>
           </p>
         </div>
