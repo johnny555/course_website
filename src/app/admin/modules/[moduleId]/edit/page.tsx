@@ -15,14 +15,14 @@ export default function EditModulePage() {
 
   useEffect(() => {
     async function fetchModule() {
-      if (!params.id || typeof params.id !== 'string') {
+      if (!params.moduleId || typeof params.moduleId !== 'string') {
         setError('Invalid module ID')
         setLoading(false)
         return
       }
 
       try {
-        const data = await getModule(params.id)
+        const data = await getModule(params.moduleId)
         if (data) {
           setModule(data)
         } else {
@@ -37,7 +37,7 @@ export default function EditModulePage() {
     }
 
     fetchModule()
-  }, [params.id])
+  }, [params.moduleId])
 
   if (loading) {
     return (
