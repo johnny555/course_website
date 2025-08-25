@@ -1,78 +1,89 @@
 'use client'
 
-import { useAuth } from './AuthProvider'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { hasCurrentUserCourseAccess } from '@/lib/course-access'
+import { useState, useEffect } from 'react'
+import { useAuth } from '@/components/AuthProvider'
+import { hasUserCourseAccess } from '@/lib/course-access'
 import Link from 'next/link'
 
-interface ProtectedRouteProps {
+interface CourseAccessGuardProps {
   children: React.ReactNode
-  adminOnly?: boolean
-  requiresCourseAccess?: boolean
+  fallback?: React.ReactNode
 }
 
-export default function ProtectedRoute({ children, adminOnly = false, requiresCourseAccess = false }: ProtectedRouteProps) {
-  const { user, loading } = useAuth()
-  const router = useRouter()
+export default function CourseAccessGuard({ children, fallback }: CourseAccessGuardProps) {
+  const { user } = useAuth()
   const [hasAccess, setHasAccess] = useState<boolean | null>(null)
-  const [checkingAccess, setCheckingAccess] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function checkUserAccess() {
-      if (!loading && user) {
-        // Check admin access
-        if (adminOnly && user.profile?.role !== 'admin') {
-          router.push('/modules')
-          return
-        }
+    async function checkAccess() {
+      if (!user?.email) {
+        setHasAccess(false)
+        setLoading(false)
+        return
+      }
 
-        // Check course access if required
-        if (requiresCourseAccess && !adminOnly) {
-          setCheckingAccess(true)
-          try {
-            const access = await hasCurrentUserCourseAccess()
-            setHasAccess(access)
-          } catch (error) {
-            console.error('Error checking course access:', error)
-            setHasAccess(false)
-          } finally {
-            setCheckingAccess(false)
-          }
-        } else {
-          setHasAccess(true) // No course access check needed
-        }
-      } else if (!loading && !user) {
-        router.push('/login')
+      try {
+        const access = await hasUserCourseAccess(user.email)
+        setHasAccess(access)
+      } catch (error) {
+        console.error('Error checking course access:', error)
+        setHasAccess(false)
+      } finally {
+        setLoading(false)
       }
     }
 
-    checkUserAccess()
-  }, [user, loading, adminOnly, requiresCourseAccess, router])
+    checkAccess()
+  }, [user?.email])
 
-  if (loading || checkingAccess) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">
-            {checkingAccess ? 'Checking course access...' : 'Loading...'}
-          </p>
+          <p className="mt-4 text-gray-600">Checking course access...</p>
         </div>
       </div>
     )
   }
 
   if (!user) {
-    return null
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8 text-center">
+          <div>
+            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+              🔐 Login Required
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              You need to be logged in to access course content.
+            </p>
+          </div>
+          <div className="space-y-4">
+            <Link
+              href="/login"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Login to Your Account
+            </Link>
+            <Link
+              href="/signup"
+              className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Create New Account
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 
-  if (adminOnly && user.profile?.role !== 'admin') {
-    return null
-  }
+  if (!hasAccess) {
+    if (fallback) {
+      return <>{fallback}</>
+    }
 
-  // Check course access for non-admin users
-  if (requiresCourseAccess && !adminOnly && hasAccess === false) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
@@ -86,7 +97,7 @@ export default function ProtectedRoute({ children, adminOnly = false, requiresCo
               🎓 Course Access Required
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              Hi <strong>{user?.email}</strong>! You need to purchase the &quot;Become A Roboticist&quot; course to access this content.
+              Hi <strong>{user.email}</strong>! You need to purchase the &quot;Become A Roboticist&quot; course to access this content.
             </p>
           </div>
           

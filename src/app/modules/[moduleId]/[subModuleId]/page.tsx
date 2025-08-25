@@ -53,7 +53,7 @@ export default function SubModuleDetailPage() {
 
   if (loading) {
     return (
-      <ProtectedRoute>
+      <ProtectedRoute requiresCourseAccess={true}>
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
         </div>
@@ -63,7 +63,7 @@ export default function SubModuleDetailPage() {
 
   if (error || !subModule || !module) {
     return (
-      <ProtectedRoute>
+      <ProtectedRoute requiresCourseAccess={true}>
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Error</h1>
@@ -85,7 +85,7 @@ export default function SubModuleDetailPage() {
   const nextSubModule = currentIndex < module.sub_modules.length - 1 ? module.sub_modules[currentIndex + 1] : null
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute requiresCourseAccess={true}>
       <div className="min-h-screen bg-gray-50">
         <div className="flex">
           {/* Table of Contents Sidebar */}

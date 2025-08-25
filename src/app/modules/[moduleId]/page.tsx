@@ -43,7 +43,7 @@ export default function ModuleOverviewPage() {
 
   if (loading) {
     return (
-      <ProtectedRoute>
+      <ProtectedRoute requiresCourseAccess={true}>
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
         </div>
@@ -53,7 +53,7 @@ export default function ModuleOverviewPage() {
 
   if (error || !module) {
     return (
-      <ProtectedRoute>
+      <ProtectedRoute requiresCourseAccess={true}>
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Error</h1>
@@ -71,7 +71,7 @@ export default function ModuleOverviewPage() {
   }
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute requiresCourseAccess={true}>
       <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-8">
           <div className="mb-6">

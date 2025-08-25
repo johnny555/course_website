@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { signUp } from '@/lib/auth'
 import { useAuth } from '@/components/AuthProvider'
-import { isEmailApproved } from '@/lib/approved-users'
+// Removed email approval import - now allowing all signups
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('')
@@ -14,7 +14,7 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-  const [checkingApproval, setCheckingApproval] = useState(false)
+  // Removed approval checking state - now allowing all signups
   const router = useRouter()
   const { user } = useAuth()
 
@@ -45,16 +45,7 @@ export default function SignUpPage() {
       return
     }
 
-    // Check if email is approved
-    setCheckingApproval(true)
-    const approved = await isEmailApproved(email)
-    setCheckingApproval(false)
-    
-    if (!approved) {
-      setError('❌ Email not approved: This email address is not on our approved list. Only students who have purchased the "Become A Roboticist" course can create an account. Please check your email address or contact support if you believe this is an error.')
-      setLoading(false)
-      return
-    }
+    // Note: Anyone can now sign up, but course access is controlled after login
 
     const { data, error } = await signUp(email, password)
 
@@ -128,10 +119,9 @@ export default function SignUpPage() {
             Join Become A Roboticist
           </h2>
           <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
-            <p className="text-sm text-blue-800 font-medium">Course Access Required</p>
+            <p className="text-sm text-blue-800 font-medium">Create Your Account</p>
             <p className="mt-1 text-sm text-blue-700">
-              Only students who have purchased the &quot;Become A Roboticist&quot; course can create an account. 
-              Your email must be on the approved list.
+              Create an account to access the &quot;Become A Roboticist&quot; course content. Course access will be verified after login.
             </p>
           </div>
           <p className="mt-2 text-center text-sm text-gray-600">
@@ -207,9 +197,9 @@ export default function SignUpPage() {
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4">
               <div className="text-red-800 text-sm">{error}</div>
-              {error.includes('not approved') && (
+              {error.includes('User already registered') && (
                 <div className="mt-2 text-xs text-red-600">
-                  💡 Need help? Contact support or check if you used the same email address when purchasing the course.
+                  💡 If you already have an account, try logging in instead.
                 </div>
               )}
             </div>
@@ -221,7 +211,7 @@ export default function SignUpPage() {
               disabled={loading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
-              {checkingApproval ? 'Checking approval...' : loading ? 'Creating account...' : 'Create Account'}
+              {loading ? 'Creating account...' : 'Create Account'}
             </button>
           </div>
         </form>

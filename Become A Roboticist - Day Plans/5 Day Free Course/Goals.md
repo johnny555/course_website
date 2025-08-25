@@ -1,0 +1,3 @@
+- Every day talk about how the Become A Roboticist course does this but goes into more detail 
+- Don't give any implementation details. This is just about experiencing and having it working on your computer. 
+- Suggest they post on social media every day to get into the habit :) 
