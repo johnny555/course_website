@@ -51,13 +51,13 @@ export default function Home() {
         <div className="mt-16 grid md:grid-cols-3 gap-8">
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="text-3xl mb-4">⚡</div>
-            <h3 className="text-lg font-semibold mb-3">Don't Waste Months Getting Started</h3>
-            <p className="text-gray-600">Most roboticists spend months slogging through basic tutorials. I'll give you everything you need upfront, then we'll slowly peel back the layers.</p>
+            <h3 className="text-lg font-semibold mb-3">Don&apos;t Waste Months Getting Started</h3>
+            <p className="text-gray-600">Most roboticists spend months slogging through basic tutorials. I&apos;ll give you everything you need upfront, then we&apos;ll slowly peel back the layers.</p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="text-3xl mb-4">💪</div>
             <h3 className="text-lg font-semibold mb-3">Build Confidence Through Practice</h3>
-            <p className="text-gray-600">Break imposter syndrome by building robots. When you see the robot you created, you'll know you've become a roboticist.</p>
+            <p className="text-gray-600">Break imposter syndrome by building robots. When you see the robot you created, you&apos;ll know you&apos;ve become a roboticist.</p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="text-3xl mb-4">🌐</div>

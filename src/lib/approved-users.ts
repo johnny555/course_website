@@ -1,4 +1,4 @@
-import { createClient } from './supabase/server'
+import { createClient } from './supabase-client'
 
 /**
  * Check if an email is approved to sign up for the course

@@ -96,7 +96,7 @@ export default function SignUpPage() {
           <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
             <p className="text-sm text-blue-800 font-medium">Course Access Required</p>
             <p className="mt-1 text-sm text-blue-700">
-              Only students who have purchased the "Become A Roboticist" course can create an account. 
+              Only students who have purchased the &quot;Become A Roboticist&quot; course can create an account. 
               Your email must be on the approved list.
             </p>
           </div>
